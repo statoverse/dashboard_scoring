@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory, redirect, url_for
+from flask_cors import CORS
 import pandas as pd
 import numpy as np
 import joblib
