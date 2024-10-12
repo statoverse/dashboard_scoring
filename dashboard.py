@@ -12,6 +12,7 @@ data_path = 'data/customers.csv'
 df = pd.read_csv(data_path)
 customer_ids = df['SK_ID_CURR'].astype(str).tolist()
 
+# URL de base pour l'API déployée sur Heroku
 base_url = "https://dashboardscoring-2a7a07653340.herokuapp.com"  # Remplacez par votre URL Heroku
 
 # Configuration de la barre latérale avec autocomplétion et sliders
@@ -68,6 +69,10 @@ if selected_customer_id:
                 image_url = shap_data.get("image_url")
                 if image_url:
                     st.image(f"{image_url}?t={time.time()}", caption="Graphique SHAP", use_column_width=True)
+                else:
+                    st.error("L'URL de l'image SHAP est introuvable.")
+            else:
+                st.error("Erreur lors de la récupération du graphique SHAP.")
 
         # Page 3 : Distributions des Features
         elif selected_panel == "Distributions":
@@ -77,3 +82,9 @@ if selected_customer_id:
                 fig_data = dist_response.json()
                 fig = pio.from_json(json.dumps(fig_data))
                 st.plotly_chart(fig)
+            else:
+                st.error("Erreur lors de la récupération des distributions des features.")
+    else:
+        st.error("Erreur lors de la récupération des données de prédiction. Veuillez vérifier l'ID client et réessayer.")
+else:
+    st.info("Veuillez sélectionner un Client ID dans la barre latérale pour commencer.")
