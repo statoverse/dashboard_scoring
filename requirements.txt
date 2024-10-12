@@ -10,7 +10,6 @@ pandas==2.2.2
 pillow==10.4.0
 pip==24.2
 pytest==7.4.4
-python==3.12.4
 scikit-learn==1.5.1
 scipy==1.13.1
 shap==0.46.0
