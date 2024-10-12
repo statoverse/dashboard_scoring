@@ -15,12 +15,11 @@ customer_ids = df['SK_ID_CURR'].astype(str).tolist()
 # URL de base pour l'API déployée sur Heroku
 base_url = "https://dashboardscoring-2a7a07653340.herokuapp.com"  # Remplacez par votre URL Heroku
 
-# Configuration de la barre latérale avec autocomplétion et sliders
+# Configuration de la barre latérale avec une liste déroulante pour sélectionner l'ID du client
 with st.sidebar:
-    st.write("### Rechercher un Client ID")
-    search_input = st.text_input("Tapez le numéro du client")
-    matching_ids = [cid for cid in customer_ids if search_input in cid]
-    selected_customer_id = st.selectbox("Client ID", matching_ids)
+    st.write("### Sélectionnez un Client ID")
+    # Liste déroulante avec tous les IDs des clients disponibles
+    selected_customer_id = st.selectbox("Client ID", customer_ids)
     num_features = st.slider("Nombre de features SHAP à afficher", min_value=1, max_value=20, value=5)
     decision_threshold = st.slider("Seuil de décision", min_value=0.0, max_value=1.0, value=0.25, step=0.05)
 
