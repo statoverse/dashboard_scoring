@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #f5ba13;
+        }
+        label {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            background-color: #f5ba13;
+            color: #000;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #f5ba13;
+            border: none;
+            color: #000;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #d99a0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select Customer for Prediction</h1>
+        
+        <form action="/predict" method="POST">
+            <label for="customer_id">Customer ID:</label>
+            <select name="customer_id" id="customer_id">
+                {% for customer_id in customer_ids %}
+                    <option value="{{ customer_id }}">{{ customer_id }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit">Test Solvability Of Customer</button>
+        </form>
+    </div>
+</body>
+</html>
