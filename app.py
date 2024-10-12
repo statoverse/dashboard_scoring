@@ -73,15 +73,19 @@ def show_prediction():
                            customer_id=customer_id)
     
 
-@app.route('/explain/<int:customer_id>')
+@app.route('/explain/<int:customer_id>', methods=['GET'])
 def explain(customer_id):
     try:
-        # Génération de l'image SHAP* # Extraire les données du client
+        # Récupérer le paramètre max_display depuis la requête
+        max_display = int(request.args.get('max_display', 10))  # Par défaut 10 si non spécifié
+
+        # Extraire les données du client
         customer_data_raw = extract_features_from_custom(df, customer_id)
         print("Extraction des données du client réussie")
         
-        plot_path = generate_shap_image(customer_data_raw)  # Cette fonction doit enregistrer l'image dans 'static/'
-        filename = os.path.basename(plot_path)  # Nom du fichier
+        # Générer et enregistrer l'image SHAP avec le paramètre max_display
+        plot_path = generate_shap_image(customer_data_raw, max_display=max_display)
+        filename = os.path.basename(plot_path)
 
         return jsonify({"image_url": f"http://localhost:5000/static/{filename}"})
     
@@ -94,6 +98,21 @@ def explain(customer_id):
 def static_files(filename):
     return send_from_directory('static', filename)
 
+
+
+
+@app.route('/distributions/<int:customer_id>', methods=['GET'])
+def distributions(customer_id):
+    from flask import jsonify
+    import json
+    import plotly
+    try:
+        fig = generate_feature_distributions(df, customer_id)
+        fig_json = json.loads(plotly.io.to_json(fig))
+        return jsonify(fig_json)
+    except Exception as e:
+        print("Erreur dans la génération des distributions:", str(e))
+        return jsonify({"error": "Une erreur s'est produite"}), 500
 
 
 

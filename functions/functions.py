@@ -56,8 +56,7 @@ def predict_score(customer_data):
 
 
 
-def generate_shap_image(customer_data_raw):
-        
+def generate_shap_image(customer_data_raw, max_display=10):
     import joblib
     import shap
     import matplotlib.pyplot as plt
@@ -78,12 +77,50 @@ def generate_shap_image(customer_data_raw):
     # Calculer les valeurs SHAP
     shap_values = explainer(df_predict)
     
-    # Générer et enregistrer le graphique SHAP
+    # Générer et enregistrer le graphique SHAP avec le paramètre max_display
     plt.figure()
-    shap.waterfall_plot(shap_values[0], show=False)
-    plot_path = 'static/shap_global_importance.png'
+    shap.plots.waterfall(shap_values[0], max_display=max_display, show=False)
+    plot_path = f'static/shap_global_importance_{customer_data_raw.index[0]}.png'
     plt.savefig(plot_path)
     plt.close()
 
     return plot_path
+
+
+
+
+# Nouvelle fonction pour générer une grille de distributions
+def generate_feature_distributions(df, customer_id, cols_per_row=2):
+    from plotly.subplots import make_subplots
+    import plotly.graph_objs as go
+    import plotly.express as px
+    customer_data = df[df['SK_ID_CURR'] == customer_id].squeeze()
+    features = [col for col in df.columns if col != 'SK_ID_CURR']
+    num_features = len(features)
+    num_rows = (num_features // cols_per_row) + int(num_features % cols_per_row > 0)
+
+    # Créer une grille de sous-graphiques
+    fig = make_subplots(rows=num_rows, cols=cols_per_row, subplot_titles=features)
+
+    for i, feature in enumerate(features):
+        row = i // cols_per_row + 1
+        col = i % cols_per_row + 1
+
+        # Créer un histogramme pour la distribution de la feature
+        hist = go.Histogram(x=df[feature], opacity=0.7, name=feature, showlegend=False)
+
+        # Ajouter une ligne pour la valeur du client
+        client_value = customer_data[feature]
+        vline = go.Scatter(x=[client_value, client_value], y=[0, df[feature].value_counts().max()],
+                           mode="lines", name="Valeur du client", line=dict(color="red"), showlegend=False)
+        
+        # Ajouter les traces à la sous-figure
+        fig.add_trace(hist, row=row, col=col)
+        fig.add_trace(vline, row=row, col=col)
+
+        # Mettre à jour les axes pour chaque sous-figure
+        fig.update_xaxes(title_text=feature, row=row, col=col)
+
+    fig.update_layout(title_text="Distributions des Features par Rapport au Client Sélectionné", height=600*num_rows, showlegend=False)
+    return fig
 
