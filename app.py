@@ -24,6 +24,11 @@ df, customer_ids = load_data()
 
 app = Flask(__name__)
 
+CORS(app)  # Activer CORS pour toutes les routes
+
+# Ou pour configurer des règles plus spécifiques
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 @app.route('/customer_ids', methods=['GET'])
 def get_customer_ids():
     # Retourner la liste des IDs clients au format JSON
