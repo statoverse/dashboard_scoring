@@ -12,6 +12,8 @@ data_path = 'data/customers.csv'
 df = pd.read_csv(data_path)
 customer_ids = df['SK_ID_CURR'].astype(str).tolist()
 
+base_url = "https://dashboardscoring-2a7a07653340.herokuapp.com"  # Remplacez par votre URL Heroku
+
 # Configuration de la barre latérale avec autocomplétion et sliders
 with st.sidebar:
     st.write("### Rechercher un Client ID")
@@ -33,7 +35,7 @@ selected_panel = option_menu(
 
 # Vérification de la sélection et récupération des données de prédiction
 if selected_customer_id:
-    response = requests.post("http://localhost:5000/predict", json={"customer_id": selected_customer_id})
+    response = requests.post(f"{base_url}/predict", json={"customer_id": selected_customer_id})
     
     if response.ok:
         data = response.json()
@@ -60,7 +62,7 @@ if selected_customer_id:
         # Page 2 : Graphique SHAP
         elif selected_panel == "Graphique SHAP":
             st.write("## Explication du modèle : SHAP")
-            shap_response = requests.get(f"http://localhost:5000/explain/{selected_customer_id}", params={"max_display": num_features})
+            shap_response = requests.get(f"{base_url}/explain/{selected_customer_id}", params={"max_display": num_features})
             if shap_response.ok:
                 shap_data = shap_response.json()
                 image_url = shap_data.get("image_url")
@@ -70,7 +72,7 @@ if selected_customer_id:
         # Page 3 : Distributions des Features
         elif selected_panel == "Distributions":
             st.write("## Positionnement du client par rapport aux autres clients")
-            dist_response = requests.get(f"http://localhost:5000/distributions/{selected_customer_id}")
+            dist_response = requests.get(f"{base_url}/distributions/{selected_customer_id}")
             if dist_response.ok:
                 fig_data = dist_response.json()
                 fig = pio.from_json(json.dumps(fig_data))

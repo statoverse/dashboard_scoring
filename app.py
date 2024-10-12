@@ -15,6 +15,7 @@ import warnings
 # Désactiver les warnings si nécessaire, mais à utiliser avec prudence
 warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 
+ase_url = "https://dashboardscoring-2a7a07653340.herokuapp.com" 
 
 # Load data once
 df, customer_ids = load_data()
@@ -87,7 +88,7 @@ def explain(customer_id):
         plot_path = generate_shap_image(customer_data_raw, max_display=max_display)
         filename = os.path.basename(plot_path)
 
-        return jsonify({"image_url": f"http://localhost:5000/static/{filename}"})
+        return jsonify({"image_url": f"{base_url}/static/{filename}"})
     
     except Exception as e:
         print("Erreur dans la route explain:", str(e))
