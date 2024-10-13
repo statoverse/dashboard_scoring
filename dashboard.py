@@ -13,8 +13,8 @@ df = pd.read_csv(data_path)
 customer_ids = df['SK_ID_CURR'].astype(str).tolist()
 
 # URL de base pour l'API déployée sur Heroku
-base_url = "https://mlscore-f70243ae9fac.herokuapp.com" # Remplacez par votre URL Heroku
-
+#base_url = "https://mlscore-f70243ae9fac.herokuapp.com" # Remplacez par votre URL Heroku
+base_url = "https://backendflaskforscoring-12eba9fb5ac8.herokuapp.com"
 # Configuration de la barre latérale avec une liste déroulante pour sélectionner l'ID du client
 with st.sidebar:
     st.write("### Sélectionnez un Client ID")
