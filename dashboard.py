@@ -4,7 +4,6 @@ import requests
 import plotly.graph_objs as go
 import plotly.io as pio
 import json
-import time
 from streamlit_option_menu import option_menu
 
 # Charger les données clients
@@ -13,12 +12,11 @@ df = pd.read_csv(data_path)
 customer_ids = df['SK_ID_CURR'].astype(str).tolist()
 
 # URL de base pour l'API déployée sur Heroku
-#base_url = "https://mlscore-f70243ae9fac.herokuapp.com" # Remplacez par votre URL Heroku
 base_url = "https://backendflaskforscoring-12eba9fb5ac8.herokuapp.com"
+
 # Configuration de la barre latérale avec une liste déroulante pour sélectionner l'ID du client
 with st.sidebar:
     st.write("### Sélectionnez un Client ID")
-    # Liste déroulante avec tous les IDs des clients disponibles
     selected_customer_id = st.selectbox("Client ID", customer_ids)
     num_features = st.slider("Nombre de features SHAP à afficher", min_value=1, max_value=20, value=5)
     decision_threshold = st.slider("Seuil de décision", min_value=0.0, max_value=1.0, value=0.25, step=0.05)
@@ -59,17 +57,16 @@ if selected_customer_id:
             ))
             st.plotly_chart(gauge)
 
-        # Page 2 : Graphique SHAP
+        # Page 2 : Graphique SHAP (envoie de num_features)
         elif selected_panel == "Graphique SHAP":
             st.write("## Explication du modèle : SHAP")
-            shap_response = requests.get(f"{base_url}/explain/{selected_customer_id}", params={"max_display": num_features})
+            shap_response = requests.get(
+                f"{base_url}/explain/{selected_customer_id}",
+                params={"max_display": num_features}  # Passer le paramètre num_features
+            )
             if shap_response.ok:
-                shap_data = shap_response.json()
-                image_url = shap_data.get("image_url")
-                if image_url:
-                    st.image(f"{image_url}?t={time.time()}", caption="Graphique SHAP", use_column_width=True)
-                else:
-                    st.error("L'URL de l'image SHAP est introuvable.")
+                # Afficher la réponse HTML contenant l'image
+                st.markdown(shap_response.text, unsafe_allow_html=True)
             else:
                 st.error("Erreur lors de la récupération du graphique SHAP.")
 
@@ -87,3 +84,4 @@ if selected_customer_id:
         st.error("Erreur lors de la récupération des données de prédiction. Veuillez vérifier l'ID client et réessayer.")
 else:
     st.info("Veuillez sélectionner un Client ID dans la barre latérale pour commencer.")
+
